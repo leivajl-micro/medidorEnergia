@@ -10,7 +10,7 @@ from pzem import PZEM
 import gc
 
 # Configuracion de Firmware
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 
 # Funciones de utilidad y configuracion
 def cargarConfiguracion():
@@ -297,4 +297,5 @@ if interfazSta.isconnected():
 
 else:
     print("Error: El boot.py no pudo conectarse, esto es malo, reiniciando")
+
     machine.reset()
