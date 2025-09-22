@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Panel de Control de Energía</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+        .main-content {
+            margin-left: 0 !important;
+            padding-top: 2rem !important;
+        }
+        .navbar {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .navbar-brand {
+            color: #212529 !important;
+            font-weight: bold;
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        .border-bottom {
+            border-color: #e9ecef !important;
+        }
+        .card {
+            border: 1px solid #dee2e6;
+            border-radius: .5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+        .card-title {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        .display-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .unit {
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+        .sidebar, .offcanvas-md {
+            display: none !important;
+        }
+        .reset-section {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar sticky-top bg-light flex-md-nowrap p-0 shadow" data-bs-theme="light">
+        <a class="navbar-brand col-12 me-0 px-3 fs-6" href="#">Panel del Analizador de Energía</a>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dispositivo: {{NOMBRE_DISPOSITIVO}}</h1>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Voltaje</h5>
+                                <p class="display-value"><span id="voltage-value">0.00</span><span class="unit"> V</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Corriente</h5>
+                                <p class="display-value"><span id="current-value">0.00</span><span class="unit"> A</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Potencia</h5>
+                                <p class="display-value"><span id="power-value">0.00</span><span class="unit"> W</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Energía</h5>
+                                <p class="display-value"><span id="energy-value">0.00</span><span class="unit"> Wh</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Frecuencia</h5>
+                                <p class="display-value"><span id="frequency-value">0.00</span><span class="unit"> Hz</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Factor de Potencia</h5>
+                                <p class="display-value"><span id="pf-value">0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row reset-section">
+                    <div class="col-12">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Control de Energía</h5>
+                                <p class="card-text">Haz clic para reiniciar el contador de energía del medidor.</p>
+                                <button id="reset-button" class="btn btn-primary" onclick="reiniciarEnergia()">Reiniciar Energía</button>
+                                <p class="mt-3" id="message"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Configurar Intervalo de Envío</h5>
+                                <p class="card-text">Establece el tiempo en segundos entre envíos de datos a Google Sheets.</p>
+                                <form id="interval-form">
+                                    <div class="mb-3">
+                                        <label for="intervalInput" class="form-label">Intervalo (segundos):</label>
+                                        <input type="number" class="form-control" id="intervalInput" value="60" min="30" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary">Guardar Intervalo</button>
+                                    <p class="mt-3" id="intervalMessage"></p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Forzar el Portal</h5>
+                                <p class="card-text">Haz clic para forzar al dispositivo a entrar en modo de configuración de red.</p>
+                                <button id="forcePortalButton" class="btn btn-warning" onclick="forzarPortal()">Forzar Portal</button>
+                                <p class="mt-3" id="forcePortalMessage"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setInterval(fetchData, 2000);
+
+            const intervalForm = document.getElementById('interval-form');
+            intervalForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                guardarIntervalo();
+            });
+        });
+
+        function fetchData() {
+            fetch('/data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('voltage-value').textContent = data.voltaje.toFixed(2);
+                    document.getElementById('current-value').textContent = data.corriente.toFixed(2);
+                    document.getElementById('power-value').textContent = data.potencia.toFixed(2);
+                    document.getElementById('energy-value').textContent = data.energia.toFixed(2);
+                    document.getElementById('frequency-value').textContent = data.frecuencia.toFixed(2);
+                    document.getElementById('pf-value').textContent = data.factor.toFixed(2);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        function reiniciarEnergia() {
+            fetch('/reiniciarEnergia', {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').textContent = 'Contador de energía reiniciado.';
+                setTimeout(() => document.getElementById('message').textContent = '', 3000);
+            })
+            .catch(error => {
+                console.error('Error al reiniciar la energía:', error);
+                document.getElementById('message').textContent = 'Error al reiniciar. Intenta de nuevo.';
+            });
+        }
+
+        function guardarIntervalo() {
+            const intervalo = document.getElementById('intervalInput').value;
+            const messageElement = document.getElementById('intervalMessage');
+
+            if (intervalo < 30) {
+                messageElement.textContent = 'El intervalo debe ser de al menos 30 segundos.';
+                messageElement.style.color = 'red';
+                return;
+            }
+
+            fetch('/guardarIntervalo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 'intervalo': intervalo })
+            })
+            .then(response => response.text())
+            .then(data => {
+                messageElement.textContent = 'Intervalo guardado correctamente.';
+                messageElement.style.color = 'green';
+            })
+            .catch(error => {
+                console.error('Error al guardar el intervalo:', error);
+                messageElement.textContent = 'Error al guardar. Intenta de nuevo.';
+                messageElement.style.color = 'red';
+            });
+        }
+        
+        function forzarPortal() {
+            document.getElementById('forcePortalMessage').textContent = "Forzando el portal, el dispositivo se reiniciará.";
+            fetch('/forzarPortal')
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error al forzar el portal:', error);
+            });
+        }
+    </script>
+</body>
+</html>

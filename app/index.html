@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configuración WiFi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Configurar WiFi y Dispositivo</h1>
+        <form action="/save" method="post">
+            <label for="nombreRed">Nombre de la Red (SSID):</label>
+            <input type="text" id="nombreRed" name="nombreRed" value="" required>
+
+            <label for="claveRed">Contraseña de la Red:</label>
+            <input type="password" id="claveRed" name="claveRed" value="">
+
+            <label for="urlScript">URL del Script de Google Apps:</label>
+            <input type="text" id="urlScript" name="urlScript" value="" required>
+            
+            <label for="nombreDispositivo">Nombre del Dispositivo:</label>
+            <input type="text" id="nombreDispositivo" name="nombreDispositivo" value="" required>
+
+            <button type="submit">Guardar y Conectar</button>
+        </form>
+    </div>
+</body>
+</html>
